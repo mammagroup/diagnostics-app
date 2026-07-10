@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { IconChevronDown } from '@tabler/icons-react'
 import { categories, questions, type CategoryKey } from '../data/questions'
 import { checkups, recommendThree } from '../data/checkups'
+import { submitLead } from '../lib/leads'
 import type { PatientInfo } from '../types'
 import { CheckupCard } from '../components/CheckupCard'
 import { ContactLinks } from '../components/ContactLinks'
@@ -38,6 +39,26 @@ export function ResultsScreen({ patient, answers }: Props) {
 
   const recommendations = recommendThree(zones.length > 0 ? zones[0].key : null)
   const recommendedIds = new Set(recommendations.map((r) => r.checkup.id))
+
+  const sentRef = useRef(false)
+  useEffect(() => {
+    if (sentRef.current) return
+    sentRef.current = true
+    const zonesText =
+      zones.length > 0
+        ? zones
+            .map((z) => `${categories[z.key].title} ${Math.round(z.percent * 100)}%`)
+            .join('; ')
+        : 'без выраженных зон'
+    submitLead({
+      fullName: patient.fullName,
+      phone: patient.phone,
+      birthDate: patient.birthDate,
+      zones: zonesText,
+      recommended: recommendations.map((r) => r.checkup.name).join(' / '),
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const rest = checkups.filter((c) => !recommendedIds.has(c.id))
   const restMini = rest.filter((c) => c.group === 'mini')
   const restMain = rest.filter((c) => c.group === 'main')
