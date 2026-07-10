@@ -28,16 +28,18 @@ export function CheckupCard({ checkup, highlighted = false }: Props) {
         ))}
       </ul>
 
-      {checkup.gifts.length > 0 && (
-        <div className="mb-3 flex flex-col gap-1.5 rounded-xl bg-brand-50 p-3">
-          {checkup.gifts.map((gift) => (
-            <div key={gift} className="flex items-center gap-2 text-xs text-brand-900">
-              <IconGift size={14} stroke={1.75} color="#a32d2d" className="flex-shrink-0" />
-              {gift}
-            </div>
-          ))}
+      <div className="mb-3 flex flex-col gap-1.5 rounded-xl bg-brand-50 p-3">
+        {checkup.gifts.map((gift) => (
+          <div key={gift} className="flex items-center gap-2 text-xs text-brand-900">
+            <IconGift size={14} stroke={1.75} color="#a32d2d" className="flex-shrink-0" />
+            {gift}
+          </div>
+        ))}
+        <div className="flex items-center gap-2 text-xs text-brand-900">
+          <IconGift size={14} stroke={1.75} color="#a32d2d" className="flex-shrink-0" />
+          Сертификат на 5 000 ₸ — можно подарить близким
         </div>
-      )}
+      </div>
 
       <div className="flex items-center justify-between">
         <div>
