@@ -5,9 +5,11 @@ import { whatsappBookingLink, type Checkup } from '../data/checkups'
 type Props = {
   checkup: Checkup
   highlighted?: boolean
+  badge?: string
+  hint?: string
 }
 
-export function CheckupCard({ checkup, highlighted = false }: Props) {
+export function CheckupCard({ checkup, highlighted = false, badge, hint }: Props) {
   const [showFull, setShowFull] = useState(false)
   const isComplex = checkup.group === 'complex'
   const rows = isComplex ? checkup.summary ?? [] : checkup.includes
@@ -18,10 +20,13 @@ export function CheckupCard({ checkup, highlighted = false }: Props) {
         highlighted ? 'border-2 border-brand-400 bg-white/70' : 'border border-gray-200 bg-white/70'
       }`}
     >
-      {highlighted && (
-        <p className="mb-1 text-xs font-medium text-brand-600">Подходит по результатам теста</p>
+      {badge && (
+        <span className="mb-2 inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600">
+          {badge}
+        </span>
       )}
       <p className="text-base font-medium">{checkup.name}</p>
+      {hint && <p className="mt-0.5 mb-0.5 text-xs text-gray-500">{hint}</p>}
       {checkup.subtitle && <p className="mt-0.5 text-xs text-gray-400">{checkup.subtitle}</p>}
 
       <ul className="mb-3 mt-3 flex flex-col gap-1.5">

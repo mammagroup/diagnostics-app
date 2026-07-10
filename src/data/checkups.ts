@@ -309,20 +309,81 @@ export const checkups: Checkup[] = [
   },
 ]
 
-export const zoneToCheckup: Record<CategoryKey, string> = {
+const miniByZone: Record<CategoryKey, string> = {
   cycle: 'gyneco-onco-uzi',
   gyneco: 'gyneco-onco-kolpo',
   thyroid: 'thyroid',
+  iron: 'thyroid',
+  adrenal: 'woman-mini',
+  androgen: 'woman-mini',
+  estrogen: 'woman-mini',
+  skin: 'woman-mini',
+  psych: 'woman-mini',
+  gi: 'woman-mini',
+}
+
+const extendedByZone: Record<CategoryKey, string> = {
+  cycle: 'woman-full',
+  gyneco: 'woman-full',
+  psych: 'woman-full',
+  iron: 'woman-full',
+  thyroid: 'antiage-woman',
   adrenal: 'antiage-woman',
   androgen: 'antiage-woman',
   estrogen: 'antiage-woman',
   skin: 'antiage-woman',
-  iron: 'thyroid',
-  psych: 'woman-full',
   gi: 'antiage-base',
 }
 
-export const defaultCheckupId = 'woman-full'
+const complexByZone: Record<CategoryKey, string> = {
+  androgen: 'complex-premium',
+  estrogen: 'complex-premium',
+  adrenal: 'complex-medium',
+  skin: 'complex-medium',
+  gi: 'complex-medium',
+  cycle: 'complex-minimum',
+  gyneco: 'complex-minimum',
+  thyroid: 'complex-minimum',
+  iron: 'complex-minimum',
+  psych: 'complex-minimum',
+}
+
+export type Recommendation = {
+  level: 'mini' | 'extended' | 'complex'
+  badge: string
+  hint: string
+  checkup: Checkup
+}
+
+function byId(id: string): Checkup {
+  return checkups.find((c) => c.id === id) ?? checkups[0]
+}
+
+export function recommendThree(topZone: CategoryKey | null): Recommendation[] {
+  const miniId = topZone ? miniByZone[topZone] : 'woman-mini'
+  const extendedId = topZone ? extendedByZone[topZone] : 'woman-full'
+  const complexId = topZone ? complexByZone[topZone] : 'complex-minimum'
+  return [
+    {
+      level: 'mini',
+      badge: 'Для начала',
+      hint: 'Быстро и недорого проверить главное по твоей зоне',
+      checkup: byId(miniId),
+    },
+    {
+      level: 'extended',
+      badge: 'Углублённо',
+      hint: 'Осмотр врачей и УЗИ по нескольким направлениям',
+      checkup: byId(extendedId),
+    },
+    {
+      level: 'complex',
+      badge: 'Полная картина',
+      hint: 'Комплексное обследование организма с анализами и сопровождением',
+      checkup: byId(complexId),
+    },
+  ]
+}
 
 export function whatsappBookingLink(checkupName: string): string {
   const text = `Здравствуйте! Прошла тест на сайте, хочу записаться на «${checkupName}»`

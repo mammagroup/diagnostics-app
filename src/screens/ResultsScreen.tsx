@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { IconChevronDown } from '@tabler/icons-react'
 import { categories, questions, type CategoryKey } from '../data/questions'
-import { checkups, zoneToCheckup, defaultCheckupId } from '../data/checkups'
+import { checkups, recommendThree } from '../data/checkups'
 import type { PatientInfo } from '../types'
 import { CheckupCard } from '../components/CheckupCard'
 import { ContactLinks } from '../components/ContactLinks'
@@ -36,9 +36,9 @@ export function ResultsScreen({ patient, answers }: Props) {
   const zones = computeZones(answers)
   const [showAll, setShowAll] = useState(false)
 
-  const recommendedId = zones.length > 0 ? zoneToCheckup[zones[0].key] : defaultCheckupId
-  const recommended = checkups.find((c) => c.id === recommendedId) ?? checkups[0]
-  const rest = checkups.filter((c) => c.id !== recommended.id)
+  const recommendations = recommendThree(zones.length > 0 ? zones[0].key : null)
+  const recommendedIds = new Set(recommendations.map((r) => r.checkup.id))
+  const rest = checkups.filter((c) => !recommendedIds.has(c.id))
   const restMini = rest.filter((c) => c.group === 'mini')
   const restMain = rest.filter((c) => c.group === 'main')
   const restComplex = rest.filter((c) => c.group === 'complex')
@@ -87,8 +87,21 @@ export function ResultsScreen({ patient, answers }: Props) {
         поговорить и какие анализы обсудить, но не заменяет очную консультацию врача.
       </p>
 
-      <p className="mb-3 text-sm font-medium text-gray-500">Рекомендуем чекап под твой результат</p>
-      <CheckupCard checkup={recommended} highlighted />
+      <p className="mb-1 text-sm font-medium text-gray-500">Три варианта под твой результат</p>
+      <p className="mb-3 text-xs text-gray-400">
+        Выбери, насколько глубоко хочешь обследоваться — от быстрой проверки до полной диагностики.
+      </p>
+      <div className="flex flex-col gap-3">
+        {recommendations.map((rec) => (
+          <CheckupCard
+            key={rec.checkup.id}
+            checkup={rec.checkup}
+            badge={rec.badge}
+            hint={rec.hint}
+            highlighted={rec.level === 'extended'}
+          />
+        ))}
+      </div>
 
       <button
         onClick={() => setShowAll(!showAll)}
