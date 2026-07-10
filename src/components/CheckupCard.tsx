@@ -1,4 +1,5 @@
-import { IconCheck, IconGift } from '@tabler/icons-react'
+import { useState } from 'react'
+import { IconCheck, IconGift, IconChevronDown } from '@tabler/icons-react'
 import { whatsappBookingLink, type Checkup } from '../data/checkups'
 
 type Props = {
@@ -7,6 +8,10 @@ type Props = {
 }
 
 export function CheckupCard({ checkup, highlighted = false }: Props) {
+  const [showFull, setShowFull] = useState(false)
+  const isComplex = checkup.group === 'complex'
+  const rows = isComplex ? checkup.summary ?? [] : checkup.includes
+
   return (
     <div
       className={`rounded-2xl p-4 ${
@@ -20,13 +25,38 @@ export function CheckupCard({ checkup, highlighted = false }: Props) {
       {checkup.subtitle && <p className="mt-0.5 text-xs text-gray-400">{checkup.subtitle}</p>}
 
       <ul className="mb-3 mt-3 flex flex-col gap-1.5">
-        {checkup.includes.map((item) => (
+        {rows.map((item) => (
           <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
             <IconCheck size={15} stroke={2} color="#a32d2d" className="mt-0.5 flex-shrink-0" />
             {item}
           </li>
         ))}
       </ul>
+
+      {isComplex && checkup.fullList && (
+        <>
+          <button
+            onClick={() => setShowFull(!showFull)}
+            className="mb-3 flex items-center gap-1 text-xs font-medium text-brand-600"
+          >
+            {showFull
+              ? 'Свернуть список'
+              : `Полный список — ${checkup.fullList.length} исследований`}
+            <IconChevronDown
+              size={14}
+              stroke={2}
+              className={`transition-transform ${showFull ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {showFull && (
+            <ol className="mb-3 flex list-decimal flex-col gap-1 pl-5 text-xs text-gray-500">
+              {checkup.fullList.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ol>
+          )}
+        </>
+      )}
 
       <div className="mb-3 flex flex-col gap-1.5 rounded-xl bg-brand-50 p-3">
         {checkup.gifts.map((gift) => (

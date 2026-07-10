@@ -41,6 +41,7 @@ export function ResultsScreen({ patient, answers }: Props) {
   const rest = checkups.filter((c) => c.id !== recommended.id)
   const restMini = rest.filter((c) => c.group === 'mini')
   const restMain = rest.filter((c) => c.group === 'main')
+  const restComplex = rest.filter((c) => c.group === 'complex')
 
   return (
     <div className="px-4 py-6">
@@ -115,6 +116,22 @@ export function ResultsScreen({ patient, answers }: Props) {
               <p className="mb-3 mt-6 text-sm font-medium text-gray-500">Основные чекапы</p>
               <div className="flex flex-col gap-3">
                 {restMain.map((checkup) => (
+                  <CheckupCard key={checkup.id} checkup={checkup} />
+                ))}
+              </div>
+            </>
+          )}
+
+          {restComplex.length > 0 && (
+            <>
+              <p className="mb-1 mt-6 text-sm font-medium text-gray-500">
+                Комплексная диагностика организма
+              </p>
+              <p className="mb-3 text-xs text-gray-400">
+                Полное обследование женского здоровья за 2 визита, с сопровождением врача 3 месяца.
+              </p>
+              <div className="flex flex-col gap-3">
+                {restComplex.map((checkup) => (
                   <CheckupCard key={checkup.id} checkup={checkup} />
                 ))}
               </div>
