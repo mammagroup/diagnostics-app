@@ -1,6 +1,9 @@
+import { useState } from 'react'
+import { IconChevronDown } from '@tabler/icons-react'
 import { categories, questions, type CategoryKey } from '../data/questions'
+import { checkups, zoneToCheckup, defaultCheckupId } from '../data/checkups'
 import type { PatientInfo } from '../types'
-import { CheckupOfferCard } from '../components/CheckupOfferCard'
+import { CheckupCard } from '../components/CheckupCard'
 import { ContactLinks } from '../components/ContactLinks'
 
 type Props = {
@@ -31,6 +34,13 @@ export function ResultsScreen({ patient, answers }: Props) {
   const nameParts = patient.fullName.trim().split(/\s+/)
   const firstName = nameParts[1] ?? nameParts[0]
   const zones = computeZones(answers)
+  const [showAll, setShowAll] = useState(false)
+
+  const recommendedId = zones.length > 0 ? zoneToCheckup[zones[0].key] : defaultCheckupId
+  const recommended = checkups.find((c) => c.id === recommendedId) ?? checkups[0]
+  const rest = checkups.filter((c) => c.id !== recommended.id)
+  const restMini = rest.filter((c) => c.group === 'mini')
+  const restMain = rest.filter((c) => c.group === 'main')
 
   return (
     <div className="px-4 py-6">
@@ -76,8 +86,46 @@ export function ResultsScreen({ patient, answers }: Props) {
         поговорить и какие анализы обсудить, но не заменяет очную консультацию врача.
       </p>
 
-      <p className="mb-3 text-sm font-medium text-gray-500">Рекомендуем пройти полный чекап</p>
-      <CheckupOfferCard />
+      <p className="mb-3 text-sm font-medium text-gray-500">Рекомендуем чекап под твой результат</p>
+      <CheckupCard checkup={recommended} highlighted />
+
+      <button
+        onClick={() => setShowAll(!showAll)}
+        className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-gray-600"
+      >
+        {showAll ? 'Скрыть остальные чекапы' : 'Посмотреть все чекапы'}
+        <IconChevronDown
+          size={16}
+          stroke={2}
+          className={`transition-transform ${showAll ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {showAll && (
+        <div className="mt-5">
+          <p className="mb-3 text-sm font-medium text-gray-500">Мини-чекапы</p>
+          <div className="flex flex-col gap-3">
+            {restMini.map((checkup) => (
+              <CheckupCard key={checkup.id} checkup={checkup} />
+            ))}
+          </div>
+
+          {restMain.length > 0 && (
+            <>
+              <p className="mb-3 mt-6 text-sm font-medium text-gray-500">Основные чекапы</p>
+              <div className="flex flex-col gap-3">
+                {restMain.map((checkup) => (
+                  <CheckupCard key={checkup.id} checkup={checkup} />
+                ))}
+              </div>
+            </>
+          )}
+
+          <p className="mt-4 text-xs text-gray-400">
+            Акционные цены на мини-чекапы действительны до конца июля.
+          </p>
+        </div>
+      )}
 
       <ContactLinks />
     </div>
