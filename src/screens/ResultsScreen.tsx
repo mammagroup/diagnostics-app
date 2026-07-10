@@ -120,6 +120,7 @@ export function ResultsScreen({ patient, answers }: Props) {
             badge={rec.badge}
             hint={rec.hint}
             highlighted={rec.level === 'extended'}
+            patient={patient}
           />
         ))}
       </div>
@@ -141,7 +142,7 @@ export function ResultsScreen({ patient, answers }: Props) {
           <p className="mb-3 text-sm font-medium text-gray-500">Мини-чекапы</p>
           <div className="flex flex-col gap-3">
             {restMini.map((checkup) => (
-              <CheckupCard key={checkup.id} checkup={checkup} />
+              <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
             ))}
           </div>
 
@@ -150,7 +151,7 @@ export function ResultsScreen({ patient, answers }: Props) {
               <p className="mb-3 mt-6 text-sm font-medium text-gray-500">Основные чекапы</p>
               <div className="flex flex-col gap-3">
                 {restMain.map((checkup) => (
-                  <CheckupCard key={checkup.id} checkup={checkup} />
+                  <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
                 ))}
               </div>
             </>
@@ -166,7 +167,7 @@ export function ResultsScreen({ patient, answers }: Props) {
               </p>
               <div className="flex flex-col gap-3">
                 {restComplex.map((checkup) => (
-                  <CheckupCard key={checkup.id} checkup={checkup} />
+                  <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
                 ))}
               </div>
             </>

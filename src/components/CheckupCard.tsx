@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { IconCheck, IconGift, IconChevronDown } from '@tabler/icons-react'
 import { whatsappBookingLink, type Checkup } from '../data/checkups'
+import { logBookingClick } from '../lib/leads'
 
 type Props = {
   checkup: Checkup
   highlighted?: boolean
   badge?: string
   hint?: string
+  patient?: { fullName: string; phone: string }
 }
 
-export function CheckupCard({ checkup, highlighted = false, badge, hint }: Props) {
+export function CheckupCard({ checkup, highlighted = false, badge, hint, patient }: Props) {
   const [showFull, setShowFull] = useState(false)
   const isComplex = checkup.group === 'complex'
   const rows = isComplex ? checkup.summary ?? [] : checkup.includes
@@ -89,6 +91,14 @@ export function CheckupCard({ checkup, highlighted = false, badge, hint }: Props
           href={whatsappBookingLink(checkup.name)}
           target="_blank"
           rel="noreferrer"
+          onClick={() =>
+            logBookingClick({
+              checkupName: checkup.name,
+              checkupPrice: checkup.price,
+              fullName: patient?.fullName ?? '',
+              phone: patient?.phone ?? '',
+            })
+          }
           className="rounded-full bg-brand-400 px-5 py-2 text-sm font-medium text-brand-50"
         >
           Записаться
