@@ -1,6 +1,7 @@
 import { categories, questions, type CategoryKey } from '../data/questions'
 import type { PatientInfo } from '../types'
 import { CheckupOfferCard } from '../components/CheckupOfferCard'
+import { ContactLinks } from '../components/ContactLinks'
 
 type Props = {
   patient: PatientInfo
@@ -77,6 +78,8 @@ export function ResultsScreen({ patient, answers }: Props) {
 
       <p className="mb-3 text-sm font-medium text-gray-500">Рекомендуем пройти полный чекап</p>
       <CheckupOfferCard />
+
+      <ContactLinks />
     </div>
   )
 }

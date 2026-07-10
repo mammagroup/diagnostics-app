@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { IconHeartHandshake, IconClockHeart, IconClipboardHeart } from '@tabler/icons-react'
+import { IconClockHeart, IconClipboardHeart } from '@tabler/icons-react'
+import { ContactLinks } from '../components/ContactLinks'
 import type { PatientInfo } from '../types'
 
 type Props = {
@@ -21,14 +22,16 @@ export function HomeScreen({ onStartTest }: Props) {
 
   return (
     <div className="px-4 py-6">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50">
-        <IconHeartHandshake size={26} stroke={1.75} color="#a32d2d" />
-      </div>
+      <img
+        src={`${import.meta.env.BASE_URL}logo.png`}
+        alt="Mamma Clinic Group"
+        className="mb-4 w-28"
+      />
       <p className="mb-2 text-xl font-medium">Диагностика женского здоровья</p>
       <p className="mb-4 text-sm leading-relaxed text-gray-500">
-        Мы — клиника женского здоровья. Наша миссия — чтобы каждая женщина понимала своё тело и
-        вовремя замечала его сигналы. Наша цель — находить сбои на раннем этапе, когда всё легко
-        поправимо, а не лечить запущенное.
+        Mamma Clinic Group — клиника женского здоровья в Алматы. Наша миссия — чтобы каждая женщина
+        понимала своё тело и вовремя замечала его сигналы. Наша цель — находить сбои на раннем
+        этапе, когда всё легко поправимо, а не лечить запущенное.
       </p>
 
       <div className="mb-4 rounded-xl bg-brand-50/60 p-3.5">
@@ -99,6 +102,8 @@ export function HomeScreen({ onStartTest }: Props) {
       >
         Пройти тест
       </button>
+
+      <ContactLinks />
     </div>
   )
 }
