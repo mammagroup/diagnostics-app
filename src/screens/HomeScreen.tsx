@@ -24,12 +24,12 @@ export function HomeScreen({ onStartTest }: Props) {
     <div className="px-4 py-6">
       <img
         src={`${import.meta.env.BASE_URL}logo.png`}
-        alt="Mamma Clinic Group"
-        className="mb-4 w-28"
+        alt="Mamma Group Clinic"
+        className="mx-auto mb-4 w-32"
       />
       <p className="mb-2 text-xl font-medium">Диагностика женского здоровья</p>
       <p className="mb-4 text-sm leading-relaxed text-gray-500">
-        Mamma Clinic Group — клиника женского здоровья в Алматы. Наша миссия — чтобы каждая женщина
+        Mamma Group Clinic — клиника женского здоровья в Алматы. Наша миссия — чтобы каждая женщина
         понимала своё тело и вовремя замечала его сигналы. Наша цель — находить сбои на раннем
         этапе, когда всё легко поправимо, а не лечить запущенное.
       </p>
