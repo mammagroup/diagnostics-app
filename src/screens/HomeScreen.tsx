@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { IconClockHeart, IconClipboardHeart } from '@tabler/icons-react'
 import { ContactLinks } from '../components/ContactLinks'
 import type { PatientInfo } from '../types'
@@ -8,16 +8,33 @@ type Props = {
 }
 
 export function HomeScreen({ onStartTest }: Props) {
-  const [fullName, setFullName] = useState('')
-  const [phone, setPhone] = useState('')
-  const [birthDate, setBirthDate] = useState('')
-  const [consent, setConsent] = useState(false)
+  const [error, setError] = useState('')
 
-  const isValid = fullName.trim().length > 0 && phone.trim().length > 0 && birthDate.length > 0 && consent
+  const nameRef = useRef<HTMLInputElement>(null)
+  const phoneRef = useRef<HTMLInputElement>(null)
+  const dateRef = useRef<HTMLInputElement>(null)
+  const consentRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = () => {
-    if (!isValid) return
-    onStartTest({ fullName, phone, birthDate })
+    // читаем значения прямо из полей — так автозаполнение браузера не теряется
+    const name = (nameRef.current?.value ?? '').trim()
+    const tel = (phoneRef.current?.value ?? '').trim()
+    const bd = dateRef.current?.value ?? ''
+    const agreed = consentRef.current?.checked ?? false
+
+    const missing: string[] = []
+    if (!name) missing.push('ФИО')
+    if (!tel) missing.push('номер телефона')
+    if (!bd) missing.push('дату рождения')
+    if (!agreed) missing.push('согласие на обработку данных')
+
+    if (missing.length > 0) {
+      setError(`Заполните: ${missing.join(', ')}.`)
+      return
+    }
+
+    setError('')
+    onStartTest({ fullName: name, phone: tel, birthDate: bd })
   }
 
   return (
@@ -57,9 +74,10 @@ export function HomeScreen({ onStartTest }: Props) {
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-500">ФИО</label>
           <input
+            ref={nameRef}
             type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            name="name"
+            autoComplete="name"
             placeholder="Иванова Айгуль Ерлановна"
             className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
           />
@@ -67,9 +85,10 @@ export function HomeScreen({ onStartTest }: Props) {
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-500">Номер телефона</label>
           <input
+            ref={phoneRef}
             type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            name="tel"
+            autoComplete="tel"
             placeholder="+7 700 000 00 00"
             className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
           />
@@ -77,9 +96,10 @@ export function HomeScreen({ onStartTest }: Props) {
         <div>
           <label className="mb-1 block text-xs font-medium text-gray-500">Дата рождения</label>
           <input
+            ref={dateRef}
             type="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
+            name="bday"
+            autoComplete="bday"
             className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
           />
         </div>
@@ -87,18 +107,18 @@ export function HomeScreen({ onStartTest }: Props) {
 
       <label className="mb-5 flex items-start gap-2 text-xs text-gray-500">
         <input
+          ref={consentRef}
           type="checkbox"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
           className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-400"
         />
         Даю согласие на обработку персональных данных
       </label>
 
+      {error && <p className="mb-3 text-sm text-brand-600">{error}</p>}
+
       <button
         onClick={handleSubmit}
-        disabled={!isValid}
-        className="w-full rounded-full bg-brand-400 py-3 text-sm font-medium text-brand-50 disabled:bg-gray-200 disabled:text-gray-400"
+        className="w-full rounded-full bg-brand-400 py-3 text-sm font-medium text-brand-50"
       >
         Пройти тест
       </button>
