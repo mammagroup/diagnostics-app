@@ -24,23 +24,31 @@ function supabaseInsert(table: string, row: Record<string, unknown>): Promise<un
   })
 }
 
+function sheetsPost(fields: Record<string, string>): Promise<unknown> {
+  const body = new URLSearchParams()
+  Object.entries(fields).forEach(([key, value]) => body.append(key, value))
+  body.append('submittedAt', new Date().toISOString())
+  return fetch(LEADS_ENDPOINT, {
+    method: 'POST',
+    mode: 'no-cors',
+    keepalive: true,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  })
+}
+
 export async function submitLead(lead: Lead): Promise<void> {
   const tasks: Promise<unknown>[] = []
 
   if (LEADS_ENDPOINT) {
-    const body = new URLSearchParams()
-    body.append('fullName', lead.fullName)
-    body.append('phone', lead.phone)
-    body.append('birthDate', lead.birthDate)
-    body.append('zones', lead.zones)
-    body.append('recommended', lead.recommended)
-    body.append('submittedAt', new Date().toISOString())
     tasks.push(
-      fetch(LEADS_ENDPOINT, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body,
+      sheetsPost({
+        type: 'lead',
+        fullName: lead.fullName,
+        phone: lead.phone,
+        birthDate: lead.birthDate,
+        zones: lead.zones,
+        recommended: lead.recommended,
       }),
     )
   }
@@ -72,14 +80,24 @@ export type BookingClick = {
 }
 
 export function logBookingClick(click: BookingClick): void {
-  if (!supabaseReady) return
   try {
-    void supabaseInsert('booking_clicks', {
-      checkup_name: click.checkupName,
-      checkup_price: click.checkupPrice,
-      full_name: click.fullName,
-      phone: click.phone,
-    })
+    if (LEADS_ENDPOINT) {
+      void sheetsPost({
+        type: 'booking',
+        checkupName: click.checkupName,
+        checkupPrice: String(click.checkupPrice),
+        fullName: click.fullName,
+        phone: click.phone,
+      })
+    }
+    if (supabaseReady) {
+      void supabaseInsert('booking_clicks', {
+        checkup_name: click.checkupName,
+        checkup_price: click.checkupPrice,
+        full_name: click.fullName,
+        phone: click.phone,
+      })
+    }
   } catch {
     // клик по кнопке не должен зависеть от отправки
   }
