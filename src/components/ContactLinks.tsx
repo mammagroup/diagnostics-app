@@ -1,4 +1,7 @@
+import { useState } from 'react'
 import { IconBrandWhatsapp, IconBrandInstagram, IconMapPin } from '@tabler/icons-react'
+import { consentDoc, offerDoc, type LegalDoc } from '../data/legal'
+import { LegalModal } from './LegalModal'
 
 const contacts = [
   {
@@ -25,6 +28,8 @@ const contacts = [
 ]
 
 export function ContactLinks() {
+  const [openDoc, setOpenDoc] = useState<LegalDoc | null>(null)
+
   return (
     <div className="mt-8 border-t border-gray-100 pt-5">
       <p className="mb-3 text-sm font-medium">Мы на связи</p>
@@ -46,6 +51,23 @@ export function ContactLinks() {
       <p className="mt-3 text-xs text-gray-400">
         г. Алматы, ул. Пушкина 2/76, БЦ «Саяхат», 1 этаж
       </p>
+
+      <div className="mt-4 flex flex-col gap-1.5">
+        <button
+          onClick={() => setOpenDoc(consentDoc)}
+          className="text-left text-xs text-gray-400 underline underline-offset-2"
+        >
+          Согласие на обработку персональных данных
+        </button>
+        <button
+          onClick={() => setOpenDoc(offerDoc)}
+          className="text-left text-xs text-gray-400 underline underline-offset-2"
+        >
+          Публичная оферта
+        </button>
+      </div>
+
+      <LegalModal doc={openDoc} onClose={() => setOpenDoc(null)} />
     </div>
   )
 }

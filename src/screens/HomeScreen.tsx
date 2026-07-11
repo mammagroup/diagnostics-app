@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
 import { IconClockHeart, IconClipboardHeart } from '@tabler/icons-react'
 import { ContactLinks } from '../components/ContactLinks'
+import { LegalModal } from '../components/LegalModal'
+import { consentDoc } from '../data/legal'
 import type { PatientInfo } from '../types'
 
 type Props = {
@@ -9,6 +11,7 @@ type Props = {
 
 export function HomeScreen({ onStartTest }: Props) {
   const [error, setError] = useState('')
+  const [showConsent, setShowConsent] = useState(false)
 
   const nameRef = useRef<HTMLInputElement>(null)
   const phoneRef = useRef<HTMLInputElement>(null)
@@ -111,7 +114,19 @@ export function HomeScreen({ onStartTest }: Props) {
           type="checkbox"
           className="mt-0.5 h-4 w-4 flex-shrink-0 accent-brand-400"
         />
-        Даю согласие на обработку персональных данных
+        <span>
+          Даю{' '}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              setShowConsent(true)
+            }}
+            className="text-brand-600 underline underline-offset-2"
+          >
+            согласие на обработку персональных данных
+          </button>
+        </span>
       </label>
 
       {error && <p className="mb-3 text-sm text-brand-600">{error}</p>}
@@ -124,6 +139,8 @@ export function HomeScreen({ onStartTest }: Props) {
       </button>
 
       <ContactLinks />
+
+      <LegalModal doc={showConsent ? consentDoc : null} onClose={() => setShowConsent(false)} />
     </div>
   )
 }
