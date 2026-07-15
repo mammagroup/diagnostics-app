@@ -117,7 +117,6 @@ export const offerDoc: LegalDoc = {
       heading: '7. Реквизиты',
       paragraphs: [
         `${COMPANY}. Адрес: ${ADDRESS}. Телефон: ${PHONE}. БИН: 160140014044.`,
-        'Банковские реквизиты: ИИК KZ60998CTB0000310711, АО «Alatau City Bank», БИК TSESKZKA.',
         'Номер лицензии на медицинскую деятельность: __________ (укажите).',
       ],
     },
