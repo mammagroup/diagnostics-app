@@ -53,6 +53,7 @@ export function ResultsScreen({ patient, answers }: Props) {
     submitLead({
       fullName: patient.fullName,
       phone: patient.phone,
+      city: patient.city,
       birthDate: patient.birthDate,
       zones: zonesText,
       recommended: recommendations.map((r) => r.checkup.name).join(' / '),

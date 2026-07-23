@@ -3,6 +3,7 @@ import { LEADS_ENDPOINT, SUPABASE_URL, SUPABASE_ANON_KEY } from '../config'
 export type Lead = {
   fullName: string
   phone: string
+  city: string
   birthDate: string
   zones: string
   recommended: string
@@ -46,6 +47,7 @@ export async function submitLead(lead: Lead): Promise<void> {
         type: 'lead',
         fullName: lead.fullName,
         phone: lead.phone,
+        city: lead.city,
         birthDate: lead.birthDate,
         zones: lead.zones,
         recommended: lead.recommended,
@@ -58,6 +60,7 @@ export async function submitLead(lead: Lead): Promise<void> {
       supabaseInsert('leads', {
         full_name: lead.fullName,
         phone: lead.phone,
+        city: lead.city,
         birth_date: lead.birthDate,
         zones: lead.zones,
         recommended: lead.recommended,

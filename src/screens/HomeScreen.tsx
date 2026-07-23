@@ -15,6 +15,7 @@ export function HomeScreen({ onStartTest }: Props) {
 
   const nameRef = useRef<HTMLInputElement>(null)
   const phoneRef = useRef<HTMLInputElement>(null)
+  const cityRef = useRef<HTMLInputElement>(null)
   const dateRef = useRef<HTMLInputElement>(null)
   const consentRef = useRef<HTMLInputElement>(null)
 
@@ -22,12 +23,14 @@ export function HomeScreen({ onStartTest }: Props) {
     // читаем значения прямо из полей — так автозаполнение браузера не теряется
     const name = (nameRef.current?.value ?? '').trim()
     const tel = (phoneRef.current?.value ?? '').trim()
+    const city = (cityRef.current?.value ?? '').trim()
     const bd = dateRef.current?.value ?? ''
     const agreed = consentRef.current?.checked ?? false
 
     const missing: string[] = []
     if (!name) missing.push('ФИО')
     if (!tel) missing.push('номер телефона')
+    if (!city) missing.push('город')
     if (!bd) missing.push('дату рождения')
     if (!agreed) missing.push('согласие на обработку данных')
 
@@ -37,7 +40,7 @@ export function HomeScreen({ onStartTest }: Props) {
     }
 
     setError('')
-    onStartTest({ fullName: name, phone: tel, birthDate: bd })
+    onStartTest({ fullName: name, phone: tel, city, birthDate: bd })
   }
 
   return (
@@ -93,6 +96,17 @@ export function HomeScreen({ onStartTest }: Props) {
             name="tel"
             autoComplete="tel"
             placeholder="+7 700 000 00 00"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
+          />
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-medium text-gray-500">Город</label>
+          <input
+            ref={cityRef}
+            type="text"
+            name="city"
+            autoComplete="address-level2"
+            placeholder="Алматы"
             className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-brand-400"
           />
         </div>
