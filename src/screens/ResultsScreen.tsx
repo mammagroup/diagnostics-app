@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { IconChevronDown } from '@tabler/icons-react'
+import { useEffect, useRef } from 'react'
+import { IconMessageHeart } from '@tabler/icons-react'
 import { categories, questions, type CategoryKey } from '../data/questions'
-import { checkups, recommendThree } from '../data/checkups'
-import { submitLead } from '../lib/leads'
+import { submitLead, logBookingClick } from '../lib/leads'
 import type { PatientInfo } from '../types'
-import { CheckupCard } from '../components/CheckupCard'
 import { ContactLinks } from '../components/ContactLinks'
 
 type Props = {
@@ -31,14 +29,14 @@ function computeZones(answers: number[]): ZoneResult[] {
     .sort((a, b) => b.percent - a.percent)
 }
 
+const CONSULT_TEXT =
+  'Здравствуйте! Я прошла тест на сайте, хочу записаться на бесплатную консультацию по результатам.'
+const CONSULT_URL = `https://wa.me/77005777041?text=${encodeURIComponent(CONSULT_TEXT)}`
+
 export function ResultsScreen({ patient, answers }: Props) {
   const nameParts = patient.fullName.trim().split(/\s+/)
   const firstName = nameParts[1] ?? nameParts[0]
   const zones = computeZones(answers)
-  const [showAll, setShowAll] = useState(false)
-
-  const recommendations = recommendThree(zones.length > 0 ? zones[0].key : null)
-  const recommendedIds = new Set(recommendations.map((r) => r.checkup.id))
 
   const sentRef = useRef(false)
   useEffect(() => {
@@ -56,14 +54,10 @@ export function ResultsScreen({ patient, answers }: Props) {
       city: patient.city,
       birthDate: patient.birthDate,
       zones: zonesText,
-      recommended: recommendations.map((r) => r.checkup.name).join(' / '),
+      recommended: 'бесплатная консультация',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  const rest = checkups.filter((c) => !recommendedIds.has(c.id))
-  const restMini = rest.filter((c) => c.group === 'mini')
-  const restMain = rest.filter((c) => c.group === 'main')
-  const restComplex = rest.filter((c) => c.group === 'complex')
 
   return (
     <div className="px-4 py-6">
@@ -105,80 +99,39 @@ export function ResultsScreen({ patient, answers }: Props) {
       )}
 
       <p className="mb-6 text-xs leading-relaxed text-gray-400">
-        Это ориентировочный опросник, а не диагноз. Он помогает понять, с каким специалистом стоит
-        поговорить и какие анализы обсудить, но не заменяет очную консультацию врача.
+        Это ориентировочный опросник, а не диагноз. Он помогает понять, в какой зоне здоровья
+        возможен сбой, но не заменяет очную консультацию врача.
       </p>
 
-      <p className="mb-1 text-sm font-medium text-gray-500">Три варианта под твой результат</p>
-      <p className="mb-3 text-xs text-gray-400">
-        Выбери, насколько глубоко хочешь обследоваться — от быстрой проверки до полной диагностики.
-      </p>
-      <div className="flex flex-col gap-3">
-        {recommendations.map((rec) => (
-          <CheckupCard
-            key={rec.checkup.id}
-            checkup={rec.checkup}
-            badge={rec.badge}
-            hint={rec.hint}
-            highlighted={rec.level === 'extended'}
-            patient={patient}
-          />
-        ))}
-      </div>
-
-      <button
-        onClick={() => setShowAll(!showAll)}
-        className="mt-5 flex w-full items-center justify-center gap-1.5 rounded-full border border-gray-200 py-2.5 text-sm font-medium text-gray-600"
-      >
-        {showAll ? 'Скрыть остальные чекапы' : 'Посмотреть все чекапы'}
-        <IconChevronDown
-          size={16}
-          stroke={2}
-          className={`transition-transform ${showAll ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      {showAll && (
-        <div className="mt-5">
-          <p className="mb-3 text-sm font-medium text-gray-500">Мини-чекапы</p>
-          <div className="flex flex-col gap-3">
-            {restMini.map((checkup) => (
-              <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
-            ))}
-          </div>
-
-          {restMain.length > 0 && (
-            <>
-              <p className="mb-3 mt-6 text-sm font-medium text-gray-500">Основные чекапы</p>
-              <div className="flex flex-col gap-3">
-                {restMain.map((checkup) => (
-                  <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
-                ))}
-              </div>
-            </>
-          )}
-
-          {restComplex.length > 0 && (
-            <>
-              <p className="mb-1 mt-6 text-sm font-medium text-gray-500">
-                Комплексная диагностика организма
-              </p>
-              <p className="mb-3 text-xs text-gray-400">
-                Полное обследование женского здоровья за 2 визита, с сопровождением врача 3 месяца.
-              </p>
-              <div className="flex flex-col gap-3">
-                {restComplex.map((checkup) => (
-                  <CheckupCard key={checkup.id} checkup={checkup} patient={patient} />
-                ))}
-              </div>
-            </>
-          )}
-
-          <p className="mt-4 text-xs text-gray-400">
-            Акционные цены на мини-чекапы действительны до конца июля.
-          </p>
+      <div className="rounded-2xl border-2 border-brand-400 bg-brand-50/40 p-5">
+        <div className="mb-2 flex items-center gap-2">
+          <IconMessageHeart size={22} stroke={1.75} className="text-brand-600" />
+          <span className="rounded-full bg-brand-400 px-2.5 py-0.5 text-xs font-medium text-brand-50">
+            Бесплатно
+          </span>
         </div>
-      )}
+        <p className="mb-1.5 text-base font-medium">Разбор результата с врачом</p>
+        <p className="mb-4 text-sm leading-relaxed text-gray-600">
+          Запишитесь на бесплатную консультацию по итогам теста. Специалист Mamma Group Clinic
+          разберёт ваш результат и подскажет, какие обследования и анализы стоит пройти именно вам.
+        </p>
+        <a
+          href={CONSULT_URL}
+          target="_blank"
+          rel="noreferrer"
+          onClick={() =>
+            logBookingClick({
+              checkupName: 'Бесплатная консультация по тесту',
+              checkupPrice: 0,
+              fullName: patient.fullName,
+              phone: patient.phone,
+            })
+          }
+          className="block rounded-full bg-brand-400 py-3 text-center text-sm font-medium text-brand-50"
+        >
+          Записаться на бесплатную консультацию
+        </a>
+      </div>
 
       <ContactLinks />
     </div>
